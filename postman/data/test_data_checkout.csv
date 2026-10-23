@@ -1,0 +1,13 @@
+first_name,last_name,email,address_1,postal_code,country_code,item_qty,promo_code
+John,Smith,john.smith@example.com,"12 Le Loi Street, District 1",700000,vn,1,TEST10
+Emma,Johnson,emma.johnson@example.com,"45 Nguyen Hue Boulevard, District 1",700000,vn,2,TEST10
+Michael,Brown,michael.brown@example.com,"78 Tran Hung Dao Street, Hoan Kiem",100000,vn,5,TEST10
+Olivia,Davis,olivia.davis@example.com,"9 Bach Dang Street, Hai Chau",550000,vn,3,TEST10
+William,Wilson,william.wilson@example.com,"23 Hung Vuong Street, Ninh Kieu",900000,vn,1,INVALID123
+Sophia,Taylor,sophia.taylor@example.com,"5 Phan Chu Trinh Street, Hue",530000,vn,2,EXPIRED2020
+James,Anderson,james.anderson@example.com,"61 Dien Bien Phu Street, Binh Thanh",700000,vn,4,TEST10
+Isabella,Thomas,isabella.thomas@example.com,"30 Quang Trung Street, Go Vap",700000,vn,10,TEST10
+Daniel,O'Connor,daniel.oconnor@example.com,"14 Hai Ba Trung Street, District 3",700000,vn,1,TEST10
+Mia,Harris,mia.harris@example.com,"88 Pasteur Street, District 1",700000,vn,2,
+Ethan,Clark,ethan.clark@example.com,123 Le Loi Street Ben Nghe Ward District 1 Ho Chi Minh City Vietnam 123 Le Loi Street Ben Nghe Ward District 1 Ho Chi Minh City Vietnam 123 Le Loi Street Ben Nghe Ward District 1 Ho Chi Minh City Vietnam 123 Le Loi Street Ben Nghe Ward District 1 Ho Chi M,700000,vn,1,TEST10
+A,B,a.b@example.com,1,1,vn,1,
