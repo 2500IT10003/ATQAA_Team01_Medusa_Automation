@@ -15,28 +15,10 @@
             {
               "listen": "test",
               "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200 OK\", function(){",
-                  "    pm.response.to.have.status(200)",
-                  "});",
-                  "pm.test('SLA < 2000ms', function () {",
-                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
-                  "});",
-                  "const productsSchema = {",
-                  "   type: \"object\", required: [\"products\"],",
-                  "   properties: { products: { type: \"array\", minItems: 1, items: {",
-                  "      type: \"object\", required: [\"id\", \"title\", \"variants\"],",
-                  "      properties: { id: { type: \"string\" }, title: { type: \"string\" },",
-                  "         variants: { type: \"array\", minItems: 1, items: { type: \"object\", required: [\"id\"], properties: { id: { type: \"string\" } } } } }",
-                  "   } } }",
-                  "};",
-                  "pm.test('Schema Valid', function()",
-                  "{pm.response.to.have.jsonSchema(productsSchema); });",
-                  ""
-                ],
                 "type": "text/javascript",
-                "packages": {},
-                "requests": {}
+                "exec": [
+                  "// ========================================== \n// Task 4.2.2: Ajv JSON Schema for Products \n// ========================================== \nconst productCatalogSchema = { \n    \"$schema\": \"http://json-schema.org/draft-07/schema#\", \n    \"type\": \"object\", \n    \"required\": [\"products\"], \n    \"properties\": { \n        \"products\": { \n            \"type\": \"array\", \n            \"items\": { \n                \"type\": \"object\", \n                \"required\": [\"id\", \"title\", \"handle\"], \n                \"properties\": { \n                    \"id\": { \"type\": \"string\" }, \n                    \"title\": { \"type\": \"string\" }, \n                    \"handle\": { \"type\": \"string\" }\n                } \n            } \n        }\n    } \n}; \n \n\npm.test(\"[Contract Validation] GET /products adheres to Ajv JSON Schema\", function () { \n    pm.response.to.have.jsonSchema(productCatalogSchema); \n});"
+                ]
               }
             }
           ],
@@ -66,28 +48,10 @@
             {
               "listen": "test",
               "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200 OK\", function(){",
-                  "    pm.response.to.have.status(200)",
-                  "});",
-                  "pm.test('SLA < 2000ms', function () {",
-                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
-                  "});",
-                  "",
-                  "var jsonData = pm.response.json();",
-                  "",
-                  "pm.test(\"Response should contain a variants array\", function () {",
-                  "    pm.expect(jsonData).to.have.property(\"variants\");",
-                  "    pm.expect(jsonData.variants).to.be.an(\"array\");",
-                  "});",
-                  "pm.environment.set(\"variantId\", jsonData.variants[0].id);",
-                  "",
-                  "",
-                  ""
-                ],
                 "type": "text/javascript",
-                "packages": {},
-                "requests": {}
+                "exec": [
+                  "\n\nvar jsonData = pm.response.json();\n\npm.test(\"Response should contain a variants array\", function () {\n    pm.expect(jsonData).to.have.property(\"variants\");\n    pm.expect(jsonData.variants).to.be.an(\"array\");\n});\npm.environment.set(\"variantId\", jsonData.variants[0].id);\n\n\n"
+                ]
               }
             }
           ],
@@ -117,35 +81,10 @@
             {
               "listen": "test",
               "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200 or 201\", function(){",
-                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
-                  "});",
-                  "pm.test('SLA < 2000ms', function () {",
-                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
-                  "});",
-                  "var jsonData = pm.response.json();",
-                  "pm.environment.set(\"cartId\", jsonData.cart.id)",
-                  "const cartSchema = {",
-                  "   type: \"object\", required: [\"cart\"],",
-                  "   properties: { cart: { type: \"object\",",
-                  "      required: [\"id\", \"region_id\", \"currency_code\", \"items\", \"total\"],",
-                  "      properties: {",
-                  "         id: { type: \"string\", pattern: \"^cart_\" },",
-                  "         region_id: { type: \"string\" }, currency_code: { type: \"string\" },",
-                  "         total: { type: \"number\" },",
-                  "         items: { type: \"array\", items: { type: \"object\",",
-                  "            required: [\"id\", \"variant_id\", \"quantity\", \"unit_price\"],",
-                  "            properties: { id: { type: \"string\" }, variant_id: { type: \"string\" },",
-                  "               quantity: { type: \"integer\", minimum: 1 }, unit_price: { type: \"number\" } } } }",
-                  "      } } }",
-                  "};",
-                  "pm.test('Schema Valid', function()",
-                  "{pm.response.to.have.jsonSchema(cartSchema); });"
-                ],
                 "type": "text/javascript",
-                "packages": {},
-                "requests": {}
+                "exec": [
+                  "pm.test(\"Extract cartId dynamically\", function () { \n\n    let jsonData = pm.response.json(); \n\n    pm.expect(jsonData.cart).to.be.an(\"object\"); \n\n    pm.expect(jsonData.cart.id).to.not.be.undefined; \n\n \n\n    pm.environment.set(\"cartId\", jsonData.cart.id); \n\n    console.log(\"Dynamically extracted cartId:\", jsonData.cart.id); \n\n}); \nvar jsonData = pm.response.json();\npm.environment.set(\"cartId\", jsonData.cart.id)\nconst cartSchema = {\n   type: \"object\", required: [\"cart\"],\n   properties: { cart: { type: \"object\",\n      required: [\"id\", \"region_id\", \"currency_code\", \"items\", \"total\"],\n      properties: {\n         id: { type: \"string\", pattern: \"^cart_\" },\n         region_id: { type: \"string\" }, currency_code: { type: \"string\" },\n         total: { type: \"number\" },\n         items: { type: \"array\", items: { type: \"object\",\n            required: [\"id\", \"variant_id\", \"quantity\", \"unit_price\"],\n            properties: { id: { type: \"string\" }, variant_id: { type: \"string\" },\n               quantity: { type: \"integer\", minimum: 1 }, unit_price: { type: \"number\" } } } }\n      } } }\n};\npm.test('Schema Valid', function()\n{pm.response.to.have.jsonSchema(cartSchema); });"
+                ]
               }
             }
           ],
@@ -184,31 +123,10 @@
             {
               "listen": "test",
               "script": {
-                "exec": [
-                  "// Tier 1: Verify HTTP Status Code (Return 200 OK or 201 Created)",
-                  "pm.test(\"Tier 1: Status code is 200 or 201\", function () {",
-                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
-                  "});",
-                  "",
-                  "// Tier 2: Verify SLA Performance (< 2000ms)",
-                  "pm.test(\"Tier 2: Response time is below 2000ms SLA\", function () {",
-                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
-                  "});",
-                  "",
-                  "// Tier 3: Verify Content-Type Header",
-                  "pm.test(\"Tier 3: Content-Type is application/json\", function () {",
-                  "    pm.response.to.have.header(\"Content-Type\");",
-                  "});",
-                  "",
-                  "// Tier 4: Verify Logic - Item Line is not empty",
-                  "pm.test(\"Tier 4: Line item array is updated and non-empty\", function () {",
-                  "    var jsonData = pm.response.json();",
-                  "    pm.expect(jsonData.cart.items).to.be.an(\"array\").that.is.not.empty;",
-                  "});"
-                ],
                 "type": "text/javascript",
-                "packages": {},
-                "requests": {}
+                "exec": [
+                  "\n\n// Tier 4: Verify Logic - Item Line is not empty\npm.test(\"Tier 4: Line item array is updated and non-empty\", function () {\n    var jsonData = pm.response.json();\n    pm.expect(jsonData.cart.items).to.be.an(\"array\").that.is.not.empty;\n});"
+                ]
               }
             }
           ],
@@ -249,42 +167,10 @@
             {
               "listen": "test",
               "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200 OK\", function () {",
-                  "   pm.expect(pm.response.code).to.equal(200);",
-                  "});",
-                  "pm.test('SLA < 2000ms', function () {",
-                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
-                  "});",
-                  "var jsonData = pm.response.json();",
-                  "pm.environment.set(\"cartId\", jsonData.cart.id)",
-                  "const cartSchema = {",
-                  "   type: \"object\", required: [\"cart\"],",
-                  "   properties: { cart: { type: \"object\",",
-                  "      required: [\"id\", \"region_id\", \"currency_code\", \"items\", \"total\"],",
-                  "      properties: {",
-                  "         id: { type: \"string\", pattern: \"^cart_\" },",
-                  "         region_id: { type: \"string\" }, currency_code: { type: \"string\" },",
-                  "         total: { type: \"number\" },",
-                  "         items: { type: \"array\", items: { type: \"object\",",
-                  "            required: [\"id\", \"variant_id\", \"quantity\", \"unit_price\"],",
-                  "            properties: { id: { type: \"string\" }, variant_id: { type: \"string\" },",
-                  "               quantity: { type: \"integer\", minimum: 1 }, unit_price: { type: \"number\" } } } }",
-                  "      } } }",
-                  "};",
-                  "pm.test('Schema Valid', function()",
-                  "{pm.response.to.have.jsonSchema(cartSchema); });",
-                  "",
-                  "pm.test(\"Content-Type is JSON\", function () {",
-                  "   pm.response.to.have.header(\"Content-Type\");",
-                  "   pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
-                  "});",
-                  "",
-                  ""
-                ],
                 "type": "text/javascript",
-                "packages": {},
-                "requests": {}
+                "exec": [
+                  "\n// ========================================== \n\n// Task 4.2.2: Ajv JSON Schema for Cart \n\n// ========================================== \n\nconst cartResponseSchema = { \n\n    \"$schema\": \"http://json-schema.org/draft-07/schema#\", \n\n    \"type\": \"object\", \n\n    \"required\": [\"cart\"], \n\n    \"properties\": { \n\n        \"cart\": { \n\n            \"type\": \"object\", \n\n            \"required\": [\"id\", \"items\", \"region_id\", \"currency_code\"], \n\n            \"properties\": { \n\n                \"id\": { \"type\": \"string\" }, \n\n                \"region_id\": { \"type\": \"string\" }, \n\n                \"currency_code\": { \"type\": \"string\" }, \n\n                \"items\": { \n\n                    \"type\": \"array\", \n\n                    \"items\": { \n\n                        \"type\": \"object\", \n\n                        \"required\": [\"id\", \"title\", \"quantity\", \"unit_price\", \"variant_id\"], \n\n                        \"properties\": { \n\n                            \"id\": { \"type\": \"string\" }, \n\n                            \"title\": { \"type\": \"string\" }, \n\n                            \"quantity\": { \"type\": \"number\" }, \n\n                            \"unit_price\": { \"type\": \"number\" }, \n\n                            \"variant_id\": { \"type\": \"string\" } \n\n                        } \n\n                    } \n\n                } \n\n            } \n\n        } \n\n    } \n\n}; \n\n \n\npm.test(\"[Contract Validation] GET /carts/{{cartId}} adheres to Ajv JSON Schema\", function () { \n\n    pm.response.to.have.jsonSchema(cartResponseSchema); \n\n}); \n"
+                ]
               }
             }
           ],
@@ -321,7 +207,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n\"quantity\": 5\n}",
+              "raw": "{\n  \"shipping_address\": {\n    \"first_name\": \"Khin Thu\",\n    \"last_name\": \"Aung\",\n    \"address_1\": \"123 Test Street\",\n    \"city\": \"Ho Chi Minh\",\n    \"country_code\": \"vn\",\n    \"postal_code\": \"700000\"\n  }\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -329,15 +215,13 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/carts/{{cartId}}/line-items/cali_01M5HYCP44N57HKC8KMMV8QD3M",
+              "raw": "{{baseUrl}}/carts/{{cartId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "carts",
-                "{{cartId}}",
-                "line-items",
-                "cali_01M5HYCP44N57HKC8KMMV8QD3M"
+                "{{cartId}}"
               ]
             }
           },
@@ -363,7 +247,7 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/carts/{{cartId}}/line-items/cali_01M5HYCP44N57HKC8KMMV8QD3M",
+              "raw": "{{baseUrl}}/carts/{{cartId}}/line-items/{{cartId}}",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -371,7 +255,148 @@
                 "carts",
                 "{{cartId}}",
                 "line-items",
-                "cali_01M5HYCP44N57HKC8KMMV8QD3M"
+                "{{cartId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Select Shipping Method",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const baseUrl = pm.environment.get(\"baseUrl\");\nconst cartId = pm.environment.get(\"cartId\");\nconst apiKey = pm.variables.get(\"publishable_api_key\");\n\npm.sendRequest({\n    url: baseUrl + \"/shipping-options?cart_id=\" + cartId,\n    method: \"GET\",\n    header: { \"x-publishable-api-key\": apiKey }\n}, function (err, res) {\n    if (!err && res.code === 200) {\n        const options = res.json().shipping_options;\n        if (options && options.length > 0) {\n            pm.environment.set(\"shippingOptionId\", options[0].id);\n            console.log(\"Set shippingOptionId: \" + options[0].id);\n        } else {\n            console.error(\"No shipping options for this cart/region.\");\n        }\n    } else {\n        console.error(\"Failed to fetch shipping options\", err || res.json());\n    }\n});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Shipping method set successfully\", function () { \n    pm.expect(pm.response.code).to.be.oneOf([200, 201]); \n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \n\n  \"option_id\": \"{{shippingOptionId}}\" \n\n} ",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/carts/{{cartId}}/shipping-methods",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carts",
+                "{{cartId}}",
+                "shipping-methods"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Initialize Payment Session",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const baseUrl = pm.environment.get(\"baseUrl\");\nconst cartId = pm.environment.get(\"cartId\");\nconst apiKey = pm.variables.get(\"publishable_api_key\");\n\n// Step 1: Automatically fetch cart details to get the region_id\npm.sendRequest({\n    url: baseUrl + \"/carts/\" + cartId,\n    method: \"GET\",\n    header: {\n        \"x-publishable-api-key\": apiKey\n    }\n}, function (err, cartRes) {\n    if (!err && cartRes.code === 200) {\n        let cart = cartRes.json().cart;\n        let regionId = cart.region_id;\n        console.log(\"Automatically found regionId: \" + regionId);\n        \n        // Step 2: Fetch payment providers using the extracted region_id\n        pm.sendRequest({ \n            url: baseUrl + \"/payment-providers?region_id=\" + regionId, \n            method: \"GET\",\n            header: {\n                \"x-publishable-api-key\": apiKey\n            }\n        }, function (err, providerRes) { \n            if (!err && providerRes.code === 200) { \n                let providers = providerRes.json().payment_providers; \n                if (providers && providers.length > 0) { \n                    pm.environment.set(\"providerId\", providers[0].id); \n                    console.log(\"Successfully set providerId: \" + providers[0].id);\n                } else {\n                    console.error(\"No payment providers available for this region.\");\n                } \n            } else {\n                console.error(\"Failed to fetch payment providers\", err || providerRes.json());\n            } \n        });\n\n        // Step 3: Automatically create Payment Collection and save its ID\n        pm.sendRequest({\n            url: baseUrl + \"/payment-collections\",\n            method: \"POST\",\n            header: {\n                \"x-publishable-api-key\": apiKey,\n                \"Content-Type\": \"application/json\"\n            },\n            body: {\n                mode: \"raw\",\n                raw: JSON.stringify({ cart_id: cartId })\n            }\n        }, function (err, pcRes) {\n            if (!err && (pcRes.code === 200 || pcRes.code === 201)) {\n                let pcId = pcRes.json().payment_collection.id;\n                pm.environment.set(\"paymentCollectionId\", pcId);\n                console.log(\"Successfully set paymentCollectionId: \" + pcId);\n            } else {\n                console.error(\"Failed to create payment collection\", err || pcRes.json());\n            }\n        });\n\n    } else {\n        console.error(\"Failed to fetch cart details\", err || cartRes.json());\n    }\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"provider_id\": \"{{providerId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/payment-collections/{{paymentCollectionId}}/payment-sessions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "payment-collections",
+                "{{paymentCollectionId}}",
+                "payment-sessions"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Complete Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// pm.test(\"Extract orderId dynamically\", function () {\n//     let jsonData = pm.response.json();\n//     pm.expect(jsonData.type).to.equal(\"order\");\n//     pm.expect(jsonData.data).to.not.be.undefined;\n\n//     let orderId = jsonData.data.id;\n//     pm.expect(orderId).to.be.a(\"string\");\n//     pm.environment.set(\"orderId\", orderId);\n//     console.log(\"Dynamically extracted orderId:\", orderId);\n// });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n} ",
+              "options": {
+                "raw": {
+                  "language": "text"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/carts/{{cartId}}/complete",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carts",
+                "{{cartId}}",
+                "complete"
               ]
             }
           },
@@ -403,30 +428,10 @@
             {
               "listen": "test",
               "script": {
-                "exec": [
-                  "pm.test(\"Status code is 200 OK\", function(){",
-                  "    pm.response.to.have.status(200)",
-                  "});",
-                  "pm.test('SLA < 2000ms', function () {",
-                  "    pm.expect(pm.response.responseTime).to.be.below(2000);",
-                  "});",
-                  "var jsonData = pm.response.json();",
-                  "pm.environment.set(\"apiToken\", jsonData.token || pm.response.headers.get(\"Set-Cookie\"));",
-                  "",
-                  "pm.test(\"Tier 2: token is a non-null string with JWT format\", function () {",
-                  "   const token = pm.environment.get(\"apiToken\");",
-                  "   pm.expect(token).to.be.a(\"string\").and.not.empty;",
-                  "   pm.expect(token.split(\".\")).to.have.length(3);",
-                  "});",
-                  "// ===== TIER 3 =====",
-                  "const authSchema = { type: \"object\", required: [\"token\"],",
-                  "   properties: { token: { type: \"string\", minLength: 20 } } };",
-                  "pm.test('Schema Valid', function()",
-                  "{pm.response.to.have.jsonSchema(authSchema); });"
-                ],
                 "type": "text/javascript",
-                "packages": {},
-                "requests": {}
+                "exec": [
+                  "\nvar jsonData = pm.response.json();\npm.environment.set(\"apiToken\", jsonData.token || pm.response.headers.get(\"Set-Cookie\"));\n\npm.test(\"Tier 2: token is a non-null string with JWT format\", function () {\n   const token = pm.environment.get(\"apiToken\");\n   pm.expect(token).to.be.a(\"string\").and.not.empty;\n   pm.expect(token.split(\".\")).to.have.length(3);\n});\n// ===== TIER 3 =====\nconst authSchema = { type: \"object\", required: [\"token\"],\n   properties: { token: { type: \"string\", minLength: 20 } } };\npm.test('Schema Valid', function()\n{pm.response.to.have.jsonSchema(authSchema); });"
+                ]
               }
             }
           ],
@@ -472,218 +477,50 @@
           }
         ]
       }
-    },
+    }
+  ],
+  "event": [
     {
-      "name": "03_Negative_Boundery_Tests",
-      "item": [
-        {
-          "name": "Negative quantity",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Status code is 400 or 422\", function () {",
-                  "    pm.expect(pm.response.code).to.be.oneOf([400, 422]);",
-                  "});",
-                  "pm.test(\"Error message is returned\", function () {",
-                  "   pm.expect(pm.response.json()).to.have.property(\"message\");",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n\"variant_id\": \"{{variantId}}\",\n\"quantity\": -5\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/carts/{{cartId}}/line-items",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "carts",
-                "{{cartId}}",
-                "line-items"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Invalid coupon",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Invalid coupon rejected with 400 or 422\", function () {",
-                  "    pm.expect([400, 422]).to.include(pm.response.code);",
-                  "});",
-                  "",
-                  "pm.test(\"Error body has a message\", function () {",
-                  "    pm.expect(pm.response.json()).to.have.property(\"message\");",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"promo_codes\": [\"INVALID123\"]\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/carts/{{cartId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "carts",
-                "{{cartId}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Unauthorized for missing Bearer tokens",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Missing Bearer token returns 401\", function () {",
-                  "    pm.expect(pm.response.code).to.equal(401);",
-                  "});",
-                  "",
-                  "pm.test(\"Error body has a message\", function () {",
-                  "    pm.expect(pm.response.json()).to.have.property(\"message\");",
-                  "});",
-                  "",
-                  "pm.test(\"Response time < 1200 ms\", function () {",
-                  "    pm.expect(pm.response.responseTime).to.be.below(1200);",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{adminBaseUrl}}/admin/orders",
-              "host": [
-                "{{adminBaseUrl}}"
-              ],
-              "path": [
-                "admin",
-                "orders"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Found for non-existent IDs",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"Non-existent ID returns 404\", function () {",
-                  "    pm.expect(pm.response.code).to.equal(404);",
-                  "});",
-                  "",
-                  "pm.test(\"Error body identifies the problem\", function () {",
-                  "    const body = pm.response.json();",
-                  "    pm.expect(body).to.have.property(\"message\");",
-                  "    pm.expect(body.type).to.be.oneOf([\"not_found\", undefined]);",
-                  "});",
-                  "",
-                  "pm.test(\"Response time < 1200 ms\", function () {",
-                  "    pm.expect(pm.response.responseTime).to.be.below(1200);",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{apiToken}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{adminBaseUrl}}/admin/orders/cali_01M5HYCP44N57HKC8KMMV8QD3M",
-              "host": [
-                "{{adminBaseUrl}}"
-              ],
-              "path": [
-                "admin",
-                "orders",
-                "cali_01M5HYCP44N57HKC8KMMV8QD3M"
-              ]
-            }
-          },
-          "response": []
-        }
-      ],
-      "auth": {
-        "type": "apikey",
-        "apikey": [
-          {
-            "key": "key",
-            "value": "x-publishable-api-key",
-            "type": "string"
-          },
-          {
-            "key": "value",
-            "value": "{{publishable_api_key}}",
-            "type": "string"
-          }
-        ]
+      "listen": "test",
+      "script": {
+        "exec": [
+          "// ========================================== ",
+          "",
+          "// TIER 1: HTTP Status Code Assertion ",
+          "",
+          "// ========================================== ",
+          "",
+          "pm.test(\"[Tier 1] HTTP Status is successful (200 OK or 201 Created)\", function () { ",
+          "",
+          "    pm.expect(pm.response.code).to.be.oneOf([200, 201]); ",
+          "",
+          "}); ",
+          "",
+          "// ========================================== ",
+          "",
+          "// TIER 2: Performance SLA Assertion (< 2000ms) ",
+          "",
+          "// ========================================== ",
+          "",
+          "pm.test(\"[Tier 2] Response Time complies with SLA (< 2000ms)\", function () { ",
+          "",
+          "    pm.expect(pm.response.responseTime).to.be.below(2000); ",
+          "",
+          "}); ",
+          "",
+          "// ========================================== ",
+          "",
+          "// TIER 3: Content-Type Header Validation ",
+          "",
+          "// ========================================== ",
+          "",
+          "pm.test(\"[Tier 3] Content-Type header is application/json\", function () { ",
+          "",
+          "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\"); ",
+          "",
+          "}); "
+        ],
+        "type": "text/javascript"
       }
     }
   ]
