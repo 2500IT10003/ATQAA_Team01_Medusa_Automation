@@ -1,13 +1,21 @@
-first_name,last_name,email,address_1,postal_code,country_code,item_qty,promo_code
-John,Smith,john.smith@example.com,"12 Le Loi Street, District 1",700000,vn,1,TEST10
-Emma,Johnson,emma.johnson@example.com,"45 Nguyen Hue Boulevard, District 1",700000,vn,2,TEST10
-Michael,Brown,michael.brown@example.com,"78 Tran Hung Dao Street, Hoan Kiem",100000,vn,5,TEST10
-Olivia,Davis,olivia.davis@example.com,"9 Bach Dang Street, Hai Chau",550000,vn,3,TEST10
-William,Wilson,william.wilson@example.com,"23 Hung Vuong Street, Ninh Kieu",900000,vn,1,INVALID123
-Sophia,Taylor,sophia.taylor@example.com,"5 Phan Chu Trinh Street, Hue",530000,vn,2,EXPIRED2020
-James,Anderson,james.anderson@example.com,"61 Dien Bien Phu Street, Binh Thanh",700000,vn,4,TEST10
-Isabella,Thomas,isabella.thomas@example.com,"30 Quang Trung Street, Go Vap",700000,vn,10,TEST10
-Daniel,O'Connor,daniel.oconnor@example.com,"14 Hai Ba Trung Street, District 3",700000,vn,1,TEST10
-Mia,Harris,mia.harris@example.com,"88 Pasteur Street, District 1",700000,vn,2,
-Ethan,Clark,ethan.clark@example.com,123 Le Loi Street Ben Nghe Ward District 1 Ho Chi Minh City Vietnam 123 Le Loi Street Ben Nghe Ward District 1 Ho Chi Minh City Vietnam 123 Le Loi Street Ben Nghe Ward District 1 Ho Chi Minh City Vietnam 123 Le Loi Street Ben Nghe Ward District 1 Ho Chi M,700000,vn,1,TEST10
-A,B,a.b@example.com,1,1,vn,1,
+first_name,last_name,email,address_1,postal_code,country_code,item_qty,promo_code 
+
+An,Nguyen,an.nguyen@testmail.com,123 Nguyen Hue St,70000,vn,1,DISCOUNT10 
+
+Binh,Tran,binh.tran@testmail.com,456 Le Loi Blvd,70000,vn,2,SUMMER2026 
+
+Chi,Le,chi.le@testmail.com,789 Dien Bien Phu,70000,vn,5,WELCOME5 
+
+Dung,Pham,dung.pham@testmail.com,12 Vo Van Kiet,70000,vn,1,PROMO50 
+
+Giang,Hoang,giang.hoang@testmail.com,88 Hai Ba Trung,70000,vn,3,FREESHIP 
+
+Hanh,Do,hanh.do@testmail.com,99 Tran Hung Dao,70000,vn,2,VIPCUSTOMER 
+
+Khoa,Vu,khoa.vu@testmail.com,34 Pasteur St,70000,vn,4,FALL2026 
+
+Linh,Bui,linh.bui@testmail.com,120 Nam Ky Khoi Nghia,70000,vn,1, 
+
+Minh,Dang,minh.dang@testmail.com,A very very long address string for boundary testing up to maximum characters 999999999999999999999999999999,70000,vn,1,SPECIAL@#$ 
+
+Phuong,Ngo,phuong.ngo@testmail.com,55 Nguyen Thi Minh Khai,70000,vn,10,EMPTYPROMO 
