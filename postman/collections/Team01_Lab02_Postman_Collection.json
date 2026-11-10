@@ -125,7 +125,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "\n\n// Tier 4: Verify Logic - Item Line is not empty\npm.test(\"Tier 4: Line item array is updated and non-empty\", function () {\n    var jsonData = pm.response.json();\n    pm.expect(jsonData.cart.items).to.be.an(\"array\").that.is.not.empty;\n});"
+                  "\n\n// Tier 4: Verify Logic - Item Line is not empty\npm.test(\"Tier 4: Line item array is updated and non-empty\", function () {\n    pm.response.to.have.status(200);\n    const items = pm.response.json().cart.items;\n    pm.expect(items).to.be.an(\"array\").that.is.not.empty;\n});\n\npm.test(\"[DDT] Item quantity matches iteration CSV data\", function () {\n    const expectedQty = Number(pm.iterationData.get(\"item_qty\"));\n    pm.response.to.have.status(200);\n    const items = pm.response.json().cart.items;\n    const addedItem = items.find(i => i.variant_id === pm.environment.get(\"variantId\"));\n    pm.expect(addedItem, \"line item for variantId\").to.exist;\n    pm.expect(addedItem.quantity).to.eql(expectedQty);\n});"
                 ]
               }
             }
@@ -140,7 +140,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n\"variant_id\": \"{{variantId}}\",\n\"quantity\": 1\n}",
+              "raw": "{\n\"variant_id\": \"{{variantId}}\",\n\"quantity\": {{item_qty}}\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -207,7 +207,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"shipping_address\": {\n    \"first_name\": \"Khin Thu\",\n    \"last_name\": \"Aung\",\n    \"address_1\": \"123 Test Street\",\n    \"city\": \"Ho Chi Minh\",\n    \"country_code\": \"vn\",\n    \"postal_code\": \"700000\"\n  }\n}",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"shipping_address\": {\n    \"first_name\": \"{{first_name}}\",\n    \"last_name\": \"{{last_name}}\",\n    \"address_1\": \"{{address_1}}\",\n    \"postal_code\": \"{{postal_code}}\",\n    \"country_code\": \"{{country_code}}\"\n  }\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -524,5 +524,4 @@
       }
     }
   ]
-  
 }
