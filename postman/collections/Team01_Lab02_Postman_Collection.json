@@ -477,6 +477,219 @@
           }
         ]
       }
+    },
+    {
+      "name": "03_Negative_Boundery_Tests",
+      "item": [
+        {
+          "name": "Negative quantity",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 400 or 422\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([400, 422]);",
+                  "});",
+                  "pm.test(\"Error message is returned\", function () {",
+                  "   pm.expect(pm.response.json()).to.have.property(\"message\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n\"variant_id\": \"{{variantId}}\",\n\"quantity\": -5\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/carts/{{cartId}}/line-items",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carts",
+                "{{cartId}}",
+                "line-items"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Invalid coupon",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Invalid coupon rejected with 400 or 422\", function () {",
+                  "    pm.expect([400, 422]).to.include(pm.response.code);",
+                  "});",
+                  "",
+                  "pm.test(\"Error body has a message\", function () {",
+                  "    pm.expect(pm.response.json()).to.have.property(\"message\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"promo_codes\": [\"INVALID123\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/carts/{{cartId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "carts",
+                "{{cartId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Unauthorized for missing Bearer tokens",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Missing Bearer token returns 401\", function () {",
+                  "    pm.expect(pm.response.code).to.equal(401);",
+                  "});",
+                  "",
+                  "pm.test(\"Error body has a message\", function () {",
+                  "    pm.expect(pm.response.json()).to.have.property(\"message\");",
+                  "});",
+                  "",
+                  "pm.test(\"Response time < 1200 ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(1200);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{adminBaseUrl}}/admin/orders",
+              "host": [
+                "{{adminBaseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Found for non-existent IDs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Non-existent ID returns 404\", function () {",
+                  "    pm.expect(pm.response.code).to.equal(404);",
+                  "});",
+                  "",
+                  "pm.test(\"Error body identifies the problem\", function () {",
+                  "    const body = pm.response.json();",
+                  "    pm.expect(body).to.have.property(\"message\");",
+                  "    pm.expect(body.type).to.be.oneOf([\"not_found\", undefined]);",
+                  "});",
+                  "",
+                  "pm.test(\"Response time < 1200 ms\", function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(1200);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{apiToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{adminBaseUrl}}/admin/orders/cali_01M5HYCP44N57HKC8KMMV8QD3M",
+              "host": [
+                "{{adminBaseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "orders",
+                "cali_01M5HYCP44N57HKC8KMMV8QD3M"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "auth": {
+        "type": "apikey",
+        "apikey": [
+          {
+            "key": "key",
+            "value": "x-publishable-api-key",
+            "type": "string"
+          },
+          {
+            "key": "value",
+            "value": "{{publishable_api_key}}",
+            "type": "string"
+          }
+        ]
+      }
     }
   ],
   "event": [
