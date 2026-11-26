@@ -47,5 +47,10 @@ export class CartPage extends BasePage {
     await this.checkoutButton.click(); 
 
   } 
+  // Add to CartPage:
+  async expectItemAddedToCart(): Promise<void> {
+  const indicator = this.cartCounterOne.or(this.cartDrawer).first();
+  await expect(indicator).toBeVisible({ timeout: 20_000 });
+}
 
 } 

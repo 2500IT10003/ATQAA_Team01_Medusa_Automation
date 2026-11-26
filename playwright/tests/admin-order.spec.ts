@@ -28,4 +28,11 @@ test.describe('Admin Order Fulfillment Reconciliation Suite', () => {
     // 3. Reconcile Customer Email & Payment Status
     await adminOrderPage.verifyOrderReconciliation(email, 'Captured|Awaiting'); 
   });
+
+  test('TC10: Invalid Admin login credentials show error & block /app/orders', async ({ page }) => {
+  const adminLoginPage = new AdminLoginPage(page);
+  await adminLoginPage.gotoAdmin();
+  await adminLoginPage.loginWithInvalidCredentials('student@vanlangsaigon.edu.vn', 'WrongPassword123');
+  await adminLoginPage.expectLoginErrorMessage();
+});
 });

@@ -43,33 +43,15 @@ export abstract class BasePage {
     await this.page.waitForLoadState('domcontentloaded'); 
 
   } 
+  async clickElement(locator: Locator): Promise<void> {
+  const target = locator.first();
+  await target.waitFor({ state: 'visible' });
+  await target.click();
+}
 
- 
-
-  /** 
-
-   * Safe click enforcing Playwright built-in auto-waiting 
-
-   */ 
-
-  async clickElement(locator: Locator): Promise<void> { 
-    await locator.first().waitFor({ state: 'visible' }); 
-    await locator.click(); 
-
-  } 
-
- 
-
-  /** 
-
-   * Fills an input field using accessibility-friendly actionability 
-
-   */ 
-
-  async fillInput(locator: Locator, text: string): Promise<void> { 
-    await locator.first().waitFor({ state: 'visible' });
-    await locator.fill(text); 
-
-  } 
-
+async fillInput(locator: Locator, text: string): Promise<void> {
+  const target = locator.first();
+  await target.waitFor({ state: 'visible' });
+  await target.fill(text);
+}
 } 
