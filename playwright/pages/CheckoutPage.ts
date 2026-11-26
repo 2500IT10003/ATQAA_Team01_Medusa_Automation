@@ -121,16 +121,29 @@ export class CheckoutPage extends BasePage {
 
  
 
-    async selectPaymentAndReview(): Promise<void> {
-    await this.paymentMethodRadio.waitFor({ state: 'visible', timeout: 30 * 1000 }).catch(() => {}); // ADDED
-    if (await this.paymentMethodRadio.isVisible()) {
-      await this.clickElement(this.paymentMethodRadio);
-    }
-    await this.continueToReviewButton.waitFor({ state: 'visible', timeout: 30 * 1000 }).catch(() => {}); // ADDED
-    if (await this.continueToReviewButton.isVisible()) {
-      await this.clickElement(this.continueToReviewButton);
-    }
+  //   async selectPaymentAndReview(): Promise<void> {
+  //   await this.paymentMethodRadio.waitFor({ state: 'visible', timeout: 30 * 1000 }).catch(() => {}); // ADDED
+  //   if (await this.paymentMethodRadio.isVisible()) {
+  //     await this.clickElement(this.paymentMethodRadio);
+  //   }
+  //   await this.continueToReviewButton.waitFor({ state: 'visible', timeout: 30 * 1000 }).catch(() => {}); // ADDED
+  //   if (await this.continueToReviewButton.isVisible()) {
+  //     await this.clickElement(this.continueToReviewButton);
+  //   }
+  // }
+  async selectPaymentAndReview(): Promise<void> {
+  await expect(this.page).toHaveURL(/step=payment/, { timeout: 45_000 });
+
+  const manualPayment = this.page.getByText(/manual payment/i).first();
+  if (await manualPayment.isVisible().catch(() => false)) {
+    await this.clickElement(manualPayment);
+  } else {
+    await this.clickElement(this.paymentMethodRadio);
   }
+
+  await expect(this.continueToReviewButton).toBeEnabled({ timeout: 45_000 });
+  await this.clickElement(this.continueToReviewButton);
+}
 
  
     async placeOrderAndCaptureId(): Promise<string> {
@@ -144,5 +157,14 @@ export class CheckoutPage extends BasePage {
     const match = rawOrderText.match(/order_[a-zA-Z0-9]+/);
     return match ? match[0] : rawOrderText.trim();
   }
+
+  async submitEmptyShippingForm(): Promise<void> {
+  await this.clickElement(this.continueToDeliveryButton);
+}
+
+async expectValidationErrors(): Promise<void> {
+  await expect(this.page).toHaveURL(/\/checkout/);
+  await expect(this.continueToPaymentButton).toBeHidden();
+}
 
 } 

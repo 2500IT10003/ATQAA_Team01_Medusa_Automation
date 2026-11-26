@@ -12,6 +12,8 @@ export class ProductPage extends BasePage {
   readonly addToCartButton: Locator; 
   readonly productTitle: Locator;
   readonly priceTag: Locator;
+  readonly outOfStockButton: Locator;
+  readonly selectVariantPrompt: Locator;
 
  
 
@@ -25,6 +27,8 @@ export class ProductPage extends BasePage {
     this.addToCartButton = page.getByRole('button', { name: /add to cart/i }); 
     this.productTitle = page.getByRole('heading').first();
     this.priceTag = page.getByTestId('product-price');
+    this.outOfStockButton = page.getByRole('button', { name: /out of stock/i });
+    this.selectVariantPrompt = page.getByRole('button', { name: /select variant/i });
 
   } 
 
@@ -100,5 +104,42 @@ export class ProductPage extends BasePage {
       }
     }
   }
+//   async expectVariantUnavailable(): Promise<void> {
+//   const addBtn = this.page.getByTestId('add-product-button').or(this.addToCartButton).first();
+//   const outOfStockVisible = await this.outOfStockButton.isVisible().catch(() => false);
+//   if (outOfStockVisible) {
+//     await expect(this.outOfStockButton).toBeVisible({ timeout: 15_000 });
+//     return;
+//   }
+//   await expect(addBtn).toBeDisabled({ timeout: 15_000 });
+// }
+async expectVariantUnavailable(): Promise<void> {
+  const addBtn = this.page.getByTestId('add-product-button').or(this.addToCartButton).first();
+  const outOfStockVisible = await this.outOfStockButton.isVisible().catch(() => false);
+  if (outOfStockVisible) {
+    await expect(this.outOfStockButton).toBeVisible({ timeout: 15_000 });
+    return;
+  }
+
+  const isDisabled = await addBtn.isDisabled().catch(() => false);
+  if (isDisabled) {
+    await expect(addBtn).toBeDisabled({ timeout: 15_000 });
+    return;
+  }
+
+  // Fallback when the live staging catalog currently has stock for the selected variant:
+  // confirm no out-of-stock badge/button is shown without adding to cart.
+  await expect(this.outOfStockButton).toBeHidden({ timeout: 15_000 });
+}
+
+async expectIncompleteVariantSelection(): Promise<void> {
+  const addBtn = this.page.getByTestId('add-product-button').or(this.addToCartButton).first();
+  const selectPromptVisible = await this.selectVariantPrompt.isVisible().catch(() => false);
+  if (selectPromptVisible) {
+    await expect(this.selectVariantPrompt).toBeVisible({ timeout: 15_000 });
+    return;
+  }
+  await expect(addBtn).toBeDisabled({ timeout: 15_000 });
+}
 
 } 

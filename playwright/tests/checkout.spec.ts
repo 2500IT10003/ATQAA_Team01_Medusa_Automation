@@ -53,4 +53,37 @@ test.describe('Storefront End-to-End Checkout Suite', () => {
       JSON.stringify({ orderId: capturedOrderId, email: customerData.email }, null, 2)
     );
   });
+
+  test('TC08: Missing required shipping fields blocks progression to delivery', async ({ page }) => {
+  const productPage = new ProductPage(page);
+  const cartPage = new CartPage(page);
+  const checkoutPage = new CheckoutPage(page);
+
+  await productPage.openProductFromStore('Classic T-Shirt');
+  await productPage.selectSize('M');
+  await productPage.selectColor('White');
+  await productPage.addToCart();
+
+  await cartPage.openCart();
+  await cartPage.proceedToCheckout();
+  await checkoutPage.submitEmptyShippingForm();
+  await checkoutPage.expectValidationErrors();
+});
+
+test('TC09: Malformed email format triggers validation error at checkout', async ({ page }) => {
+  const productPage = new ProductPage(page);
+  const cartPage = new CartPage(page);
+  const checkoutPage = new CheckoutPage(page);
+
+  await productPage.openProductFromStore('Classic T-Shirt');
+  await productPage.selectSize('M');
+  await productPage.selectColor('White');
+  await productPage.addToCart();
+
+  await cartPage.openCart();
+  await cartPage.proceedToCheckout();
+  await checkoutPage.fillInput(checkoutPage.emailInput, 'student-invalid-email');
+  await checkoutPage.submitEmptyShippingForm();
+  await checkoutPage.expectValidationErrors();
+});
 });

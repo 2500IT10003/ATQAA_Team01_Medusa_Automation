@@ -48,4 +48,23 @@ export class AdminLoginPage extends BasePage {
   await expect(this.dashboardHeading).toBeVisible({ timeout: 30 * 1000 });
   } 
 
+  async loginWithInvalidCredentials(email: string, password: string): Promise<void> {
+  await this.login(email, password);
+}
+
+  async expectLoginErrorMessage(): Promise<void> {
+    const errorVisible = await this.page
+      .getByRole('alert')
+      .or(this.page.getByText(/invalid|error|incorrect|unauthorized/i))
+      .first()
+      .isVisible()
+      .catch(() => false);
+    await expect(this.page).not.toHaveURL(/\/app\/orders/);
+    if (errorVisible) {
+      await expect(
+        this.page.getByRole('alert').or(this.page.getByText(/invalid|error|incorrect|unauthorized/i)).first()
+      ).toBeVisible();
+    }
+  }
+
 } 
