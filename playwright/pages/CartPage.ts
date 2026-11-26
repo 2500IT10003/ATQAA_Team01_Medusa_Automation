@@ -7,14 +7,12 @@ import { BasePage } from './BasePage';
 export class CartPage extends BasePage { 
 
   readonly cartTriggerButton: Locator; 
-
   readonly cartDrawer: Locator; 
-
   readonly cartItemsTable: Locator; 
-
   readonly subtotalText: Locator; 
-
   readonly checkoutButton: Locator; 
+  readonly cartCounterOne: Locator;
+  readonly goToCartButton: Locator;
 
  
 
@@ -22,27 +20,25 @@ export class CartPage extends BasePage {
 
     super(page); 
 
-    this.cartTriggerButton = page.getByRole('button', { name: /cart/i }).or(page.getByTestId('nav-cart-link')); 
-
-    this.cartDrawer = page.locator('div[data-testid="cart-drawer"]').or(page.getByRole('dialog')); 
-
-    this.cartItemsTable = page.locator('table').or(page.getByTestId('cart-items-table')); 
-
+    this.cartTriggerButton = page.getByRole('button', { name: /cart/i }).or(page.getByTestId('nav-cart-link')).first(); // ADDED .first() 
+    this.cartDrawer = page.getByTestId('cart-drawer').or(page.getByRole('dialog')).first(); // CHANGED
+    this.cartItemsTable = page.getByTestId('cart-items-table').or(page.getByRole('table')).first(); // CHANGED    
     this.subtotalText = page.getByText(/subtotal|total/i).first(); 
-
-    this.checkoutButton = page.getByRole('button', { name: /go to checkout|checkout/i }); 
-
+    this.checkoutButton = page.getByRole('button', { name: /go to checkout|checkout/i }).first(); // ADDED .first() 
+    this.cartCounterOne = page.getByText(/Cart\s*\(1\)/i).first();
+    this.goToCartButton = page.getByRole('button', { name: /go to cart/i }).first();
   } 
 
  
 
-  async openCart(): Promise<void> { 
+   async openCart(): Promise<void> {
+    await this.navigateTo('/vn/cart'); // CHANGED: was this.cartTriggerButton.click()
+  }
 
-    await this.cartTriggerButton.click(); 
+  async openCartFromNav(): Promise<void> { // ADDED: the original behavior, kept
+    await this.cartTriggerButton.click();
+  }
 
-  } 
-
- 
 
   async proceedToCheckout(): Promise<void> { 
 

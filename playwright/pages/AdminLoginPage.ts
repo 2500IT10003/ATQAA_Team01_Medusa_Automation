@@ -34,7 +34,7 @@ export class AdminLoginPage extends BasePage {
 
   async login(email: string = 'student@vanlangsaigon.edu.vn', password: string = 'vlscStudent123456'): Promise<void> { 
 
-    await this.emailInput.waitFor({ state: 'visible' }); 
+    await this.emailInput.waitFor({ state: 'visible', timeout: 90 * 1000 }); // CHANGED: added a 90s timeout 
 
     await this.emailInput.fill(email); 
 

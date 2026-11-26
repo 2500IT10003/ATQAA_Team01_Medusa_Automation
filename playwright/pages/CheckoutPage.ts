@@ -59,48 +59,33 @@ export class CheckoutPage extends BasePage {
   constructor(page: Page) { 
 
     super(page); 
+    const box = page.getByRole('textbox'); // ADDED: field order from the snapshot: 0 first, 1 last, 2 address, 3 company, 4 postal, 5 city, 6 state, 7 email, 8 phone
 
     // Guest Shipping Address Form Locators 
 
-    this.firstNameInput = page.getByTestId('shipping-first-name-input').or(page.getByLabel(/first name/i)); 
-
-    this.lastNameInput = page.getByTestId('shipping-last-name-input').or(page.getByLabel(/last name/i)); 
-
-    this.addressInput = page.getByTestId('shipping-address-input').or(page.getByLabel(/address/i).first()); 
-
-    this.postalCodeInput = page.getByTestId('shipping-postal-code-input').or(page.getByLabel(/postal code|zip/i)); 
-
-    this.cityInput = page.getByTestId('shipping-city-input').or(page.getByLabel(/city/i)); 
-
-    this.emailInput = page.getByTestId('shipping-email-input').or(page.getByLabel(/email/i)); 
-
-    this.continueToDeliveryButton = page.getByTestId('submit-address-button').or(page.getByRole('button', { name: /continue to delivery/i })); 
+    this.firstNameInput = page.getByTestId('shipping-first-name-input').or(page.getByLabel(/first name/i)).or(box.nth(0)).first();
+    this.lastNameInput = page.getByTestId('shipping-last-name-input').or(page.getByLabel(/last name/i)).or(box.nth(1)).first();
+    this.addressInput = page.getByTestId('shipping-address-input').or(page.getByLabel(/address/i).first()).or(box.nth(2)).first();
+    this.postalCodeInput = page.getByTestId('shipping-postal-code-input').or(page.getByLabel(/postal code|zip/i)).or(box.nth(4)).first();
+    this.cityInput = page.getByTestId('shipping-city-input').or(page.getByLabel(/city/i)).or(box.nth(5)).first();
+    this.emailInput = page.getByTestId('shipping-email-input').or(page.getByLabel(/email/i)).or(box.nth(7)).first();
+    this.continueToDeliveryButton = page.getByTestId('submit-address-button').or(page.getByRole('button', { name: /continue to delivery/i })).first();
 
  
 
     // Delivery / Shipping Step Locators 
-
-    this.shippingMethodRadio = page.getByTestId('delivery-option-radio').first().or(page.getByRole('radio').first()); 
-
-    this.continueToPaymentButton = page.getByTestId('submit-delivery-option-button').or(page.getByRole('button', { name: /continue to payment/i })); 
-
- 
+    this.shippingMethodRadio = page.getByTestId('delivery-option-radio').first().or(page.getByRole('radio').first()).first();
+    this.continueToPaymentButton = page.getByTestId('submit-delivery-option-button').or(page.getByRole('button', { name: /continue to payment/i })).first(); 
 
     // Payment Step Locators 
-
-    this.paymentMethodRadio = page.getByTestId('payment-method-radio').first().or(page.getByRole('radio').first()); 
-
-    this.continueToReviewButton = page.getByTestId('submit-payment-button').or(page.getByRole('button', { name: /continue to review/i })); 
-
+    this.paymentMethodRadio = page.getByTestId('payment-method-radio').first().or(page.getByRole('radio').first()).first();
+    this.continueToReviewButton = page.getByTestId('submit-payment-button').or(page.getByRole('button', { name: /continue to review/i })).first();
  
 
     // Final Order Placement & Confirmation Locators 
-
-    this.placeOrderButton = page.getByTestId('submit-order-button').or(page.getByRole('button', { name: /place order/i })); 
-
-    this.orderConfirmationHeading = page.getByRole('heading', { name: /thank you|order was placed/i }); 
-
-    this.orderIdText = page.getByTestId('order-id').or(page.locator('span:has-text("order_")')); 
+    this.placeOrderButton = page.getByTestId('submit-order-button').or(page.getByRole('button', { name: /place order/i })).first();
+    this.orderConfirmationHeading = page.getByRole('heading', { name: /thank you|order was placed/i }).first();
+    this.orderIdText = page.getByTestId('order-id').or(page.getByText(/order_[a-zA-Z0-9]+/)).first();
 
   } 
 
@@ -136,38 +121,28 @@ export class CheckoutPage extends BasePage {
 
  
 
-  async selectPaymentAndReview(): Promise<void> { 
-
-    if (await this.paymentMethodRadio.isVisible()) { 
-
-      await this.clickElement(this.paymentMethodRadio); 
-
-    } 
-
-    if (await this.continueToReviewButton.isVisible()) { 
-
-      await this.clickElement(this.continueToReviewButton); 
-
-    } 
-
-  } 
+    async selectPaymentAndReview(): Promise<void> {
+    await this.paymentMethodRadio.waitFor({ state: 'visible', timeout: 30 * 1000 }).catch(() => {}); // ADDED
+    if (await this.paymentMethodRadio.isVisible()) {
+      await this.clickElement(this.paymentMethodRadio);
+    }
+    await this.continueToReviewButton.waitFor({ state: 'visible', timeout: 30 * 1000 }).catch(() => {}); // ADDED
+    if (await this.continueToReviewButton.isVisible()) {
+      await this.clickElement(this.continueToReviewButton);
+    }
+  }
 
  
+    async placeOrderAndCaptureId(): Promise<string> {
+    await this.clickElement(this.placeOrderButton);
+    await expect(this.orderConfirmationHeading).toBeVisible({ timeout: 30 * 1000 });
 
-  async placeOrderAndCaptureId(): Promise<string> { 
+    const fromUrl = this.page.url().match(/order_[a-zA-Z0-9]+/); // ADDED: confirmation URL is /vn/order/<id>/confirmed
+    if (fromUrl) return fromUrl[0];
 
-    await this.clickElement(this.placeOrderButton); 
-
-    await expect(this.orderConfirmationHeading).toBeVisible({ timeout: 30 * 1000 }); 
-
-     
-
-    const rawOrderText = await this.orderIdText.innerText(); 
-
-    const match = rawOrderText.match(/order_[a-zA-Z0-9]+/); 
-
-    return match ? match[0] : rawOrderText.trim(); 
-
-  } 
+    const rawOrderText = await this.orderIdText.innerText();
+    const match = rawOrderText.match(/order_[a-zA-Z0-9]+/);
+    return match ? match[0] : rawOrderText.trim();
+  }
 
 } 
