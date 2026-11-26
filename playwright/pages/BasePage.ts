@@ -53,9 +53,7 @@ export abstract class BasePage {
    */ 
 
   async clickElement(locator: Locator): Promise<void> { 
-
-    await locator.waitFor({ state: 'visible' }); 
-
+    await locator.first().waitFor({ state: 'visible' }); 
     await locator.click(); 
 
   } 
@@ -69,9 +67,7 @@ export abstract class BasePage {
    */ 
 
   async fillInput(locator: Locator, text: string): Promise<void> { 
-
-    await locator.waitFor({ state: 'visible' }); 
-
+    await locator.first().waitFor({ state: 'visible' });
     await locator.fill(text); 
 
   } 
